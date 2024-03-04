@@ -6,6 +6,8 @@ import (
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/joho/godotenv"
+	"github.com/tn-bot/internal/config"
+	"github.com/tn-bot/internal/storage"
 	"github.com/tn-bot/internal/telegram"
 )
 
@@ -15,6 +17,16 @@ func main() {
 		log.Fatalf("Can't find .env or token")
 	}
 
+	spreadsheetIdAdmin, ok := os.LookupEnv("SPREADSHEET_ID_ADMIN")
+	if !ok {
+		log.Fatalf("Can't find .env or spreadsheetId")
+	}
+
+	spreadsheetIdUsers, ok := os.LookupEnv("SPREADSHEET_ID_USERS")
+	if !ok {
+		log.Fatalf("Can't find .env or spreadsheetId")
+	}
+
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		log.Panic(err)
@@ -22,7 +34,16 @@ func main() {
 
 	bot.Debug = true
 
-	telegramBot := telegram.NewBot(bot)
+	cfg := config.New()
+
+	pg := storage.NewPostgres(cfg)
+	defer pg.Close()
+
+	sheetsAdmin := storage.NewSheets(spreadsheetIdAdmin, "Admin")
+
+	sheetsUsers := storage.NewSheets(spreadsheetIdUsers, "User")
+
+	telegramBot := telegram.NewBot(bot, pg, sheetsAdmin, sheetsUsers)
 	telegramBot.Start()
 }
 

@@ -1,0 +1,19 @@
+version: '3.5'
+
+services:
+  db_go_proj:
+    restart: always
+    container_name: db_tn_bot
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_PASSWORD=7070
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=tn-bot
+      - TZ=Europe/Moscow
+    image: postgres:15.5-alpine3.18
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+   postgres_data:

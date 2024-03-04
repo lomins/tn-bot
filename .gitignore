@@ -1,3 +1,6 @@
 .env
-credentials.json
-token.json
+.vscode
+credentialsAdmin.json
+tokenAdmin.json
+credentialsUser.json
+tokenUser.json
